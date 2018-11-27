@@ -25,6 +25,10 @@ def getLineElements(programLine):
             element=""
     if element!="":
         elementsLst.append(element)
+    while "/" in elementsLst:
+        index=elementsLst.index("/")
+        elementsLst.remove("/")
+        elementsLst[index]="//"
     return elementsLst
 
 def extractFunctions(programLinesLst):
@@ -71,3 +75,6 @@ def extractFunctionDefinition(functionsLst):
         function.pop(0)
         function.insert(0,[functionName,parameterLst])
     return functionsLst
+
+def getStorageVariable(operationsLst):
+    return operationsLst[0], operationsLst[2:]

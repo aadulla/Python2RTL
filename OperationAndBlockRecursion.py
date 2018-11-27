@@ -43,7 +43,7 @@ def recurseArithmeticOperations(operationsLst,depth=0):
         return SubOperation(recurseArithmeticOperations(operationsLst[0],depth-1),recurseArithmeticOperations(operationsLst[2],depth-1),depth-1)
     elif operationsLst[1]=="*":
         return MultOperation(recurseArithmeticOperations(operationsLst[0],depth-1),recurseArithmeticOperations(operationsLst[2],depth-1),depth-1)
-    elif operationsLst[1]=="/":
+    elif operationsLst[1]=="//":
         return DivOperation(recurseArithmeticOperations(operationsLst[0],depth-1),recurseArithmeticOperations(operationsLst[2],depth-1),depth-1)
 
 def recurseTree(operation,varDictCounter,storageVariable):
@@ -67,3 +67,15 @@ def recurseTree(operation,varDictCounter,storageVariable):
                 varDictCounter.addVariable(storageVariable)
             # varDict[storageVariable]=1+varDict.get(storageVariable,-1)
         return block
+
+def convertBlockToLst(block,lst=None):
+    if lst==None:
+        lst=[]
+    if not isinstance(block,Block):
+        return
+    else:
+        lst.append(block)
+        inputDependency1,inputDependency2=block.getInputDependenciesRaw()
+        convertBlockToLst(inputDependency1,lst)
+        convertBlockToLst(inputDependency2,lst)
+        return lst

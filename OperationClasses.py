@@ -1,3 +1,6 @@
+from tkinter import *
+from PIL import Image, ImageTk
+
 class Operation(object):
     def __init__(self,operand1,operand2,depth,token,name):
         try:
@@ -38,6 +41,8 @@ class Operation(object):
         return self.depth
     def getName(self):
         return self.name
+    def getToken(self):
+        return self.token
     def __repr__(self):
         return "%s(%s,%s)"%(self.name,self.operand1,self.operand2)
 
@@ -58,6 +63,41 @@ class AddOperation(Operation):
     def compute(self,varDictValues):
         operand1,operand2=self.getOperandsComputable(varDictValues)
         self.result=operand1+operand2
+        return operand1,operand2
+    def draw(self,data,operand1,operand2):
+        operand1=abs(operand1)
+        operand2=abs(operand2)
+        maxOperand=max(operand1,operand2)
+        bitLength=maxOperand.bit_length()
+        canvasHeight=data.height
+        fullAdderImgHeight=450
+        scale=fullAdderImgHeight/(canvasHeight/(bitLength+1))
+        adderImg=Image.open("full adder.png")
+        width=ImageTk.PhotoImage(adderImg).width()
+        height=ImageTk.PhotoImage(adderImg).height()
+        adderImgResized=adderImg.resize((int(width//scale),int(height//scale)),Image.ANTIALIAS)
+        data.image=ImageTk.PhotoImage(adderImgResized)
+        startX=100
+        startY=0
+        locationLst=[]
+        root = Toplevel()
+        canvas = Canvas(root, width=data.width, height=data.height)
+        canvas.configure(bd=0, highlightthickness=0, background="white")
+        canvas.pack()
+        for i in range(bitLength+1):
+            locationLst.append((startX,startY))
+            label=Label(canvas,image=data.image)
+            label.image=data.image
+            canvas.create_image(startX,startY,anchor="nw",image=data.image)
+            startY+=450/scale
+        startX=100
+        startY=0
+        for i in range(bitLength):
+            canvas.create_line(startX+(685/scale),startY+(331/scale),startX+(685/scale),startY+(450/scale),width=4/scale)
+            canvas.create_line(startX+(685/scale),startY+(450/scale),startX-(25/scale),startY+(450/scale),width=4/scale)
+            canvas.create_line(startX-(25/scale),startY+(450/scale),startX-(25/scale),startY+(597.5/scale),width=4/scale)
+            canvas.create_line(startX-(25/scale),startY+(597.5/scale),startX+(25/scale),startY+(597.5/scale),width=4/scale)
+            startY+=450/scale
     
 class SubOperation(Operation):
     def __init__(self,operand1,operand2,depth):
@@ -65,17 +105,20 @@ class SubOperation(Operation):
     def compute(self,varDictValues):
         operand1,operand2=self.getOperandsComputable(varDictValues)
         self.result=operand1-operand2
+        return operand1,operand2
         
 class MultOperation(Operation):
     def __init__(self,operand1,operand2,depth):
-        super().__init__(operand1,operand2,depth,"*","mult")
+        super().__init__(operand1,operand2,depth,"x","mult")
     def compute(self,varDictValues):
         operand1,operand2=self.getOperandsComputable(varDictValues)
         self.result=operand1*operand2
+        return operand1,operand2
         
 class DivOperation(Operation):
     def __init__(self,operand1,operand2,depth):
-        super().__init__(operand1,operand2,depth,"/","div")
+        super().__init__(operand1,operand2,depth,"//","div")
     def compute(self,varDictValues):
         operand1,operand2=self.getOperandsComputable(varDictValues)
-        self.result=operand1/operand2
+        self.result=operand1//operand2
+        return operand1,operand2
