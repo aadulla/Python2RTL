@@ -31,6 +31,14 @@ class VariableDictionary(object):
             else:
                 varsLst.append(None)
         return varsLst
+    def draw(self,canvas,data):
+        x=data.width-150
+        y=35
+        for var in self.varDict:
+            if var!=None:
+                txt=var + ": " + str(self.varDict[var])
+                canvas.create_text(x,y,text=txt,font="arial 15 bold",anchor="nw")
+                y+=25
     def __repr__(self):
         returnStr=""
         for var in self.varDict:

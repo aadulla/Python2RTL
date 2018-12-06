@@ -87,4 +87,8 @@ def blocksScheduler(blocksLst,varDictCounter):
         # print("length", len(checkAvailableVarsLst))
         # print("-------------------------------------")
         # print("yay")
+    # for i in scheduledBlocksLst:
+    #     for j in i:
+    #         print(j)
+    #         print()
     return scheduledBlocksLst

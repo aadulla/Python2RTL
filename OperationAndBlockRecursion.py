@@ -2,11 +2,6 @@ import copy
 from OperationClasses import *
 from BlockClass import *
 
-# def getVarDependency(operand,varDict):
-#     name=operand
-#     instance=varDict[operand]
-#     return name + str(instance)
-
 def getOperationOutput(operation,storageVariable):
     depth=str(operation.getDepth())
     return storageVariable+depth
@@ -48,8 +43,6 @@ def recurseArithmeticOperations(operationsLst,depth=0):
 
 def recurseTree(operation,varDictCounter,storageVariable):
     if not isinstance(operation,Operation):
-        # if operation in varDict:
-            # return getVarDependency(operation,varDict)
         if varDictCounter.checkPresent(operation):
             return varDictCounter.getVariableFull(operation)
         elif isinstance(operation,int):
@@ -65,7 +58,7 @@ def recurseTree(operation,varDictCounter,storageVariable):
                 varDictCounter.incrementVariable(storageVariable)
             else:
                 varDictCounter.addVariable(storageVariable)
-            # varDict[storageVariable]=1+varDict.get(storageVariable,-1)
+            operation.setResult(varDictCounter.getVariableFull(storageVariable))
         return block
 
 def convertBlockToLst(block,lst=None):

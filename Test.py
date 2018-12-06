@@ -58,9 +58,7 @@ def test():
         c=recurseArithmeticOperations(b)
         d=StoreOperation(var,c)
         lst+=convertBlockToLst(recurseTree(d,varDictCounter,var)) 
-    
-    # for i in lst:
-    #     print(i.operation,i.output)
+
     outLst=blocksScheduler(lst,varDictCounter1)
     
     for i in range(len(outLst)):

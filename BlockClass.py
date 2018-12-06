@@ -10,6 +10,8 @@ class Block(object):
         Block.number+=1
         self.num=Block.number
         self.input1DependencyNumerical,self.input2DependencyNumerical=0,0
+        self.inputPorts=[1,2]
+        self.centerX,self.centerY=0,0
     def setInputDependenciesRaw(self,input1Dependency,input2Dependency):
         self.input1DependencyRaw=input1Dependency
         self.input2DependencyRaw=input2Dependency
@@ -66,14 +68,24 @@ class Block(object):
         return self.operation
     def getResult(self,varDictValues):
         if self.operation.getName()=="store":
-            self.operation.storeValue(varDictValues)
+            self.input1DependencyNumerical,self.input2DependencyNumerical=self.operation.storeValue(varDictValues)
         else:
             self.input1DependencyNumerical,self.input2DependencyNumerical=self.operation.compute(varDictValues)
         return self.operation.getResult()
-    def draw(self,canvas,data,centerX,centerY):
-        canvas.create_oval(centerX-data.radius,centerY-data.radius,centerX+data.radius,centerY+data.radius,fill="blue")
-        canvas.create_text(centerX,centerY,font="Arial 20 bold",text=self.operation.getToken())
-    def drawRTL(self,data):
-        self.operation.draw(data,self.input1DependencyNumerical,self.input2DependencyNumerical)
+    def getNumericalResult(self):
+        return self.operation.getResult()
+    def draw(self,canvas,data,x,y,canvasMap):
+        self.operation.draw(canvas,data,x,y,canvasMap)
+        self.centerX,self.centerY=x,y
+    def redraw(self,canvas,data):
+        self.operation.redraw(canvas,data,self.centerX,self.centerY)
+    def drawRTL(self,canvas,data,centerX,centerY,canvasMap):
+        return self.operation.drawRTL(canvas,data,centerX,centerY,canvasMap)
+    def getShapeDimensions(self):
+        return self.operation.getShapeDimensions()
+    def useInputPort(self,port):
+        self.inputPorts.remove(port)
+    def getInputPorts(self):
+        return self.inputPorts
     def __repr__(self):
         return "operation: " + str(self.operation) + "\n" + "input1Dependency: " + str(self.input1DependencyTraced) + "\n" + "input2Dependency: " + str(self.input2DependencyTraced) + "\n" + "output: " + str(self.output) + "\n" + str(self.num) + "\n"

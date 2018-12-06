@@ -16,14 +16,15 @@ def init(data):
 def distance(x1,y1,x2,y2):
     return (((x2-x1)**2)+((y2-y1)**2)**0.5)
 
-def mousePressed(event, data,canvas):
-    for i in range(len(data.locationLst)):
-        x,y=data.locationLst[i]
-        if distance(event.x,event.y,x,y)<data.radius:
-            print(data.flattenBlocksLst[i].getOperation(), data.flattenBlocksLst[i].getResult(data.varDictValues))
-            data.flattenBlocksLst[i].drawRTL(data)
-            break
-
+def mousePressed(event,data):
+    # for i in range(len(data.locationLst)):
+    #     x,y=data.locationLst[i]
+    #     if distance(event.x,event.y,x,y)<data.radius:
+    #         print(data.flattenBlocksLst[i].getOperation())
+    #         data.flattenBlocksLst[i].drawRTL(data)
+    #         print("result",data.flattenBlocksLst[i].getResult(data.varDictValues))
+    #         break
+    pass
 def keyPressed(event, data):
     # use event.char and event.keysym
     pass
@@ -56,34 +57,123 @@ def redrawAll(canvas,data):
         backShift=num-1
         centerY=middle-(backShift*ySpacing/2)
         for block in level:
-            # block.draw(canvas,centerX,centerY)
+            block.draw(data,canvas,centerX,centerY)
             locationLst.append((centerX,centerY))
             centerY+=ySpacing
         centerX+=xSpacing
     data.locationLst=locationLst
     data.flattenBlocksLst=flatten(data.blocksLst)
-    for i in range(len(data.flattenBlocksLst)):
+    length1=40
+    length2=length1+10
+    for i in range(len(data.flattenBlocksLst)-1,-1,-1):
         input1,input2=data.flattenBlocksLst[i].getInputDependenciesRaw()
-        if input1 in data.flattenBlocksLst:
+        if input1 in data.flattenBlocksLst and input2 in data.flattenBlocksLst.and data.flattenBlocksLst[i].getOperation().getName()!="store":
+            index1=data.flattenBlocksLst.index(input1)
+            index2=data.flattenBlocksLst.index(input2)
+            if index2>index1:
+                cx1,cy1=data.locationLst[i]
+                cx2,cy2=data.locationLst[index2]
+                startBlock=data.flattenBlocksLst[index2]
+                endBlock=data.flattenBlocksLst[i]
+                width,height,input1TraceOrigin,input2TraceOrigin,outputTraceOrigin,scale=startBlock.getShapeDimensions()
+                outputX,outputY,lineWidth=outputTraceOrigin
+                startX=cx2+((outputX-(width/2))/scale)
+                startY=cy2+((outputY-(height/2))/scale)
+                width,height,input1TraceOrigin,input2TraceOrigin,outputTraceOrigin,scale=endBlock.getShapeDimensions()
+                inputX,inputY,lineWidth=input2TraceOrigin
+                endX=cx1+((inputX-(width/2))/scale)
+                endY=cy1+((inputY-(height/2))/scale)
+                canvas.create_line(startX,startY,endX,endY,width=lineWidth/scale)
+                endBlock.useInputPort(2)
+        if input1 in data.flattenBlocksLst and data.flattenBlocksLst[i].getOperation().getName()!="store":
             index=data.flattenBlocksLst.index(input1)
             cx1,cy1=data.locationLst[i]
             cx2,cy2=data.locationLst[index]
-            canvas.create_line(cx1,cy1,cx2,cy2)
-        if input2 in data.flattenBlocksLst:
+            startBlock=data.flattenBlocksLst[index]
+            endBlock=data.flattenBlocksLst[i]
+            width,height,input1TraceOrigin,input2TraceOrigin,outputTraceOrigin,scale=startBlock.getShapeDimensions()
+            outputX,outputY,lineWidth=outputTraceOrigin
+            startX=cx2+((outputX-(width/2))/scale)
+            startY=cy2+((outputY-(height/2))/scale)
+            if cy2>cy1 and 2 in endBlock.getInputPorts():
+                width,height,input1TraceOrigin,input2TraceOrigin,outputTraceOrigin,scale=endBlock.getShapeDimensions()
+                inputX,inputY,lineWidth=input2TraceOrigin
+                endX=cx1+((inputX-(width/2))/scale)
+                endY=cy1+((inputY-(height/2))/scale)
+                endBlock.useInputPort(2)
+            else:
+                width,height,input1TraceOrigin,input2TraceOrigin,outputTraceOrigin,scale=endBlock.getShapeDimensions()
+                inputX,inputY,lineWidth=input1TraceOrigin
+                endX=cx1+((inputX-(width/2))/scale)
+                endY=cy1+((inputY-(height/2))/scale)
+                endBlock.useInputPort(1)
+            canvas.create_line(startX,startY,endX,endY,width=lineWidth/scale)
+        if input2 in data.flattenBlocksLst and data.flattenBlocksLst[i].getOperation().getName()!="store":
             index=data.flattenBlocksLst.index(input2)
             cx1,cy1=data.locationLst[i]
             cx2,cy2=data.locationLst[index]
-            canvas.create_line(cx1,cy1,cx2,cy2)
-    centerX=25
-    for level in data.blocksLst:
-        num=len(level)
-        backShift=num-1
-        centerY=middle-(backShift*ySpacing/2)
-        for block in level:
-            block.draw(canvas,data,centerX,centerY)
-            locationLst.append((centerX,centerY))
-            centerY+=ySpacing
-        centerX+=xSpacing
+            startBlock=data.flattenBlocksLst[index]
+            endBlock=data.flattenBlocksLst[i]
+            width,height,input1TraceOrigin,input2TraceOrigin,outputTraceOrigin,scale=startBlock.getShapeDimensions()
+            outputX,outputY,lineWidth=outputTraceOrigin
+            startX=cx2+((outputX-(width/2))/scale)
+            startY=cy2+((outputY-(height/2))/scale)
+            if cy2>cy1 and 2 in endBlock.getInputPorts():
+                width,height,input1TraceOrigin,input2TraceOrigin,outputTraceOrigin,scale=endBlock.getShapeDimensions()
+                inputX,inputY,lineWidth=input2TraceOrigin
+                endX=cx1+((inputX-(width/2))/scale)
+                endY=cy1+((inputY-(height/2))/scale)
+                endBlock.useInputPort(2)
+            else:
+                width,height,input1TraceOrigin,input2TraceOrigin,outputTraceOrigin,scale=endBlock.getShapeDimensions()
+                inputX,inputY,lineWidth=input1TraceOrigin
+                endX=cx1+((inputX-(width/2))/scale)
+                endY=cy1+((inputY-(height/2))/scale)
+                endBlock.useInputPort(1)
+            canvas.create_line(startX,startY,endX,endY,width=lineWidth/scale)
+                
+                
+
+    
+    #     if input1 in data.flattenBlocksLst:
+    # for i in range(len(data.flattenBlocksLst)):
+    #     input1,input2=data.flattenBlocksLst[i].getInputDependenciesRaw()
+    #     if input1 in data.flattenBlocksLst:
+    #         index=data.flattenBlocksLst.index(input1)
+    #         cx1,cy1=data.locationLst[i]
+    #         cx2,cy2=data.locationLst[index]
+    #         canvas.create_line(cx1,cy1,cx2,cy2)
+    #     elif isinstance(input1,int):
+    #         cx1,cy1=data.locationLst[i]
+    #         canvas.create_line(cx1,cy1,cx1,cy1-length1)
+    #         canvas.create_text(cx1,cy1-length2,text=str(input1),font="arial 20 bold")
+    #     elif input1!=None:
+    #         cx1,cy1=data.locationLst[i]
+    #         canvas.create_line(cx1,cy1,cx1,cy1-length1)
+    #         canvas.create_text(cx1,cy1-length2,text=input1[:1],font="arial 20 bold")
+    #     if input2 in data.flattenBlocksLst:
+    #         index=data.flattenBlocksLst.index(input2)
+    #         cx1,cy1=data.locationLst[i]
+    #         cx2,cy2=data.locationLst[index]
+    #         canvas.create_line(cx1,cy1,cx2,cy2)
+    #     elif isinstance(input2,int):
+    #         cx1,cy1=data.locationLst[i]
+    #         canvas.create_line(cx1,cy1,cx1,cy1+length1)
+    #         canvas.create_text(cx1,cy1+length2,text=str(input2),font="arial 20 bold")
+    #     elif input2!=None:
+    #         cx1,cy1=data.locationLst[i]
+    #         canvas.create_line(cx1,cy1,cx1,cy1+length1)
+    #         canvas.create_text(cx1,cy1+length2,text=input2[:1],font="arial 20 bold")
+    # centerX=25
+    # for level in data.blocksLst:
+    #     num=len(level)
+    #     backShift=num-1
+    #     centerY=middle-(backShift*ySpacing/2)
+    #     for block in level:
+    #         block.draw(data,canvas,centerX,centerY)
+    #         centerY+=ySpacing
+    #     centerX+=xSpacing
+    # data.varDictValues.draw(canvas,data)
 ####################################
 # use the run function as-is
 ####################################
@@ -97,7 +187,7 @@ def run(blocksLst,varDictValues):
         canvas.update()    
 
     def mousePressedWrapper(event, canvas, data):
-        mousePressed(event, data,canvas)
+        mousePressed(event, data)
         # redrawAllWrapper(canvas, data)
         
 
@@ -115,11 +205,11 @@ def run(blocksLst,varDictValues):
     for i in data.blocksLst:
         if len(i)>max:
             max=len(i)
-    width=len(blocksLst)*75
-    height= max*100
+    width=len(blocksLst)*100
+    height= max*150
     data.width = width
     data.height = height
-    root = Tk()
+    root = Toplevel()
     root.resizable(width=False, height=False) # prevents resizing window
     init(data)
     # create the root and the canvas

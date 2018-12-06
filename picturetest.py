@@ -1,6 +1,7 @@
 from tkinter import *
 from PIL import Image, ImageTk
-
+from ArithmeticUnitsClasses import *
+from GateClasses import *
 
 ####################################
 # customize these functions
@@ -20,37 +21,94 @@ def keyPressed(event, data):
     
 
 def redrawAll(canvas,data):
-    operand1=abs(21)
-    operand2=abs(1)
-    maxOperand=max(operand1,operand2)
-    bitLength=maxOperand.bit_length()
-    canvasHeight=data.height
-    fullAdderImgHeight=450
-    scale=fullAdderImgHeight/(canvasHeight/(bitLength+1))
-    adderImg=Image.open("full adder.png")
-    width=ImageTk.PhotoImage(adderImg).width()
-    height=ImageTk.PhotoImage(adderImg).height()
-    adderImgResized=adderImg.resize((int(width//scale),int(height//scale)),Image.ANTIALIAS)
-    data.image=ImageTk.PhotoImage(adderImgResized)
-    startX=100
-    startY=0
-    for i in range(bitLength+1):
-        canvas.create_image(startX,startY,anchor="nw",image=data.image)
-        startY+=450/scale
-    startX=100
-    startY=0
-    for i in range(bitLength):
-        canvas.create_line(startX+(685/scale),startY+(331/scale),startX+(685/scale),startY+(450/scale),width=4/scale)
-        canvas.create_line(startX+(685/scale),startY+(450/scale),startX-(25/scale),startY+(450/scale),width=4/scale)
-        canvas.create_line(startX-(25/scale),startY+(450/scale),startX-(25/scale),startY+(597.5/scale),width=4/scale)
-        canvas.create_line(startX-(25/scale),startY+(597.5/scale),startX+(25/scale),startY+(597.5/scale),width=4/scale)
-        startY+=450/scale
-    # canvas.create_image(100,0,anchor="nw",image=data.image)
-    # canvas.create_image(100,450,anchor="nw",image=data.image)
-    # canvas.create_line(785,331,785,450,width=4)
-    # canvas.create_line(785,450,75,450,width=4)
-    # canvas.create_line(75,450,75,597.5,width=4)
-    # canvas.create_line(75,597.5,125,597.5,width=4)
+    canvasMap=[]
+    for i in range(data.height):
+        tmpLst=[]
+        for j in range (data.width):
+            tmpLst.append(0)
+        canvasMap.append(tmpLst)
+    a=EightBitAdder(0,0)
+    a.drawRTL(canvas,data,200,400,canvasMap)
+    # ANDGateImg=Image.open("Full8BitAdder.png")
+    # width=ImageTk.PhotoImage(ANDGateImg).width()
+    # height=ImageTk.PhotoImage(ANDGateImg).height()
+    # scale=1
+    # ANDGateImgResized=ANDGateImg.resize((int(width//scale),int(height//scale)),Image.ANTIALIAS)
+    # # ANDGateImgResized=ANDGateImgResized.rotate(90,expand=True)
+    # data.image=ImageTk.PhotoImage(ANDGateImgResized)
+    # label=Label(canvas,image=data.image)
+    # label.image=data.image
+    # startX=50
+    # startY=300
+    # print(width,height)
+    # canvas.create_image(data.width/2,data.height/2,image=data.image)
+    # ANDGateImg=Image.open("ANDGate.png")
+    # width=ImageTk.PhotoImage(ANDGateImg).width()
+    # height=ImageTk.PhotoImage(ANDGateImg).height()
+    # scale=2.875
+    # ANDGateImgResized=ANDGateImg.resize((int(width//scale),int(height//scale)),Image.ANTIALIAS)
+    # ANDGateImgResized=ANDGateImgResized.rotate(270,expand=True)
+    # data.image=ImageTk.PhotoImage(ANDGateImgResized)
+    # label=Label(canvas,image=data.image)
+    # label.image=data.image
+    # canvas.create_image(startX+115,startY-100/scale,image=data.image)
+    # canvas.create_image(startX+190,startY-100/scale,image=data.image)
+
+    # canvas.create_line(startX+115,startY+4,startX+115,0,width=4)
+    # canvas.create_line(startX+190,startY+4,startX+190,0,width=4)
+    # canvas.create_line(startX+265,startY+4,startX+265,0,width=4)
+    # canvas.create_line(startX+340,startY+4,startX+340,0,width=4)
+    # canvas.create_line(startX+415,startY+4,startX+415,0,width=4)
+    # canvas.create_line(startX+490,startY+4,startX+490,0,width=4)
+    # canvas.create_line(startX+565,startY+4,startX+565,0,width=4)
+    # canvas.create_line(startX+640,startY+4,startX+640,0,width=4)
+    # canvas.create_line(startX+790,startY+4,startX+790,0,width=4)
+    # 
+    # canvas.create_line(startX+895,startY+229,1000,startY+229,width=4)
+    # canvas.create_line(startX+3,startY+229,0,startY+229,width=4)
+    # 
+    # canvas.create_line(startX+115,startY+454,startX+115,1000,width=4)
+    
+    # scale=1
+    # eightBitMultiplierImg=Image.open("Multiplier.png")
+    # width=ImageTk.PhotoImage(eightBitMultiplierImg).width()
+    # height=ImageTk.PhotoImage(eightBitMultiplierImg).height()
+    # eightBitMultiplierImgResized=eightBitMultiplierImg.resize((int(width//scale),int(height//scale)),Image.ANTIALIAS)
+    # data.image=ImageTk.PhotoImage(eightBitMultiplierImgResized)
+    # label=Label(canvas,image=data.image)
+    # label.image=data.image
+    # startX=100
+    # startY=100
+    # print(width,height)
+    # canvas.create_image(startX,startY,anchor="nw",image=data.image)
+    # canvas.create_image(startX,startY+500,anchor="nw",image=data.image)
+    # canvas.create_line(startX+61,startY+2,startX+61,0,width=4)
+    # canvas.create_line(startX+136,startY+2,startX+136,0,width=4)
+    # canvas.create_line(startX+286,startY+2,startX+286,0,width=4)
+    # canvas.create_line(startX+361,startY+2,startX+361,0,width=4)
+    # canvas.create_line(startX+436,startY+2,startX+436,0,width=4)
+    # canvas.create_line(startX+511,startY+2,startX+511,0,width=4)
+    # canvas.create_line(startX+586,startY+2,startX+586,0,width=4)
+    # canvas.create_line(startX+661,startY+2,startX+661,0,width=4)
+    # canvas.create_line(startX+736,startY+2,startX+736,0,width=4)
+    # canvas.create_line(startX+811,startY+2,startX+811,0,width=4)
+    # 
+    # canvas.create_line(startX+31,startY+226,startX+31,800,width=2)
+    # canvas.create_line(startX+68,startY+226,startX+68,800,width=2)
+    # canvas.create_line(startX+105,startY+226,startX+105,800,width=2)
+    # canvas.create_line(startX+143,startY+226,startX+143,800,width=2)
+    # canvas.create_line(startX+180,startY+226,startX+180,800,width=2)
+    # canvas.create_line(startX+218,startY+226,startX+218,800,width=2)
+    # canvas.create_line(startX+255,startY+226,startX+255,800,width=2)
+    # canvas.create_line(startX+293,startY+226,startX+293,800,width=2)
+    # canvas.create_line(startX+405,startY+226,startX+405,800,width=2)
+    # 
+    
+    
+
+
+
+
 ####################################
 # use the run function as-is
 ####################################
@@ -76,8 +134,8 @@ def run():
     # Set up data and call init
     class Struct(object): pass
     data = Struct()
-    width=900
-    height= 700
+    width=1500
+    height= 2000
     data.width = width
     data.height = height
     root = Tk()
@@ -87,6 +145,13 @@ def run():
     canvas = Canvas(root, width=data.width, height=data.height)
     canvas.configure(bd=0, highlightthickness=0, background="white")
     canvas.pack()
+    
+    scrollbar = Scrollbar(root)
+    scrollbar.pack(side=RIGHT, fill=Y)
+    
+    
+    scrollbar.config(command=canvas.yview)
+
     # set up events
     root.bind("<Button-1>", lambda event:
                             mousePressedWrapper(event, canvas, data))
